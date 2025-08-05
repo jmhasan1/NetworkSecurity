@@ -20,6 +20,7 @@ MONGO_DB_URL =os.getenv("MONGO_DB_URL")
 
 class DataIngestion:
     def __init__(self,data_ingestion_config:DataIngestionConfig):
+        # We really need to initialize the entire data ingestion config from this DataIngestionConfig class.
         try:
             self.data_ingestion_config=data_ingestion_config
         except Exception as e:
@@ -35,6 +36,7 @@ class DataIngestion:
             self.mongo_client=pymongo.MongoClient(MONGO_DB_URL)
             collection=self.mongo_client[database_name][collection_name]
 
+            # getting the entire data & converting into a dataframe
             df=pd.DataFrame(list(collection.find()))
             if "_id" in df.columns.to_list():
                 df=df.drop(columns=["_id"],axis=1)      # MongoDB by default creates _id , so we need to drop it
@@ -89,11 +91,17 @@ class DataIngestion:
         
     def initiate_data_ingestion(self):
         try:
+            # get the datframe itself
             dataframe=self.export_collection_as_dataframe()
+            # 2nd step - creatig a feature store
             dataframe=self.export_data_into_feature_store(dataframe)
+            # train/test split
             self.split_data_as_train_test(dataframe)
+
             dataingestionartifact=DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path,
                                                         test_file_path=self.data_ingestion_config.testing_file_path)
+            
+            # the final outpout of data ngestion component
             return dataingestionartifact
 
         except Exception as e:
