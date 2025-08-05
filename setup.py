@@ -16,7 +16,7 @@ def get_requirements()->List[str]:
             # Read lines from files
             lines = file.readlines()
             # process each line
-            for line in lines:
+            for line in lines: 
                 requirement = line.strip()
                 # ignore empty lines and -e.
                 if requirement and requirement != '-e .':
