@@ -28,25 +28,42 @@ class NetworkDataExtract():
         try:
             data=pd.read_csv(file_path)
             data.reset_index(drop=True,inplace=True)
+            # below we have unconventional but functional way to transform data, likely from a pandas DataFrame, into a list of dictionaries.
             records=list(json.loads(data.T.to_json()).values())
+            # A cleaner, more direct alternative using standard pandas methods is:
+            # records = data.to_dict(orient='list')
             return records
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
-    def insert_data_mongodb(self,records,database,collection):
+    
+    def insert_data_mongodb(self, records, database, collection):
         try:
-            self.database=database
-            self.collection=collection
-            self.records=records
+            # Store input parameters as instance attributes (assuming 'self' is part of a class)
+            self.database = database
+            self.collection = collection
+            self.records = records
 
-            self.mongo_client=pymongo.MongoClient(MONGO_DB_URL)
+            # Establish a connection to the MongoDB server using a URL defined elsewhere (MONGO_DB_URL)
+            self.mongo_client = pymongo.MongoClient(MONGO_DB_URL)
+
+            # Select the target database
             self.database = self.mongo_client[self.database]
-            
-            self.collection=self.database[self.collection]
+        
+            # Select the target collection within the database
+            self.collection = self.database[self.collection]
+
+            # Insert all documents from the 'records' list into the collection
             self.collection.insert_many(self.records)
-            return(len(self.records))
+
+            # Return the count of records that were attempted to be inserted
+            return (len(self.records))
+
         except Exception as e:
-            raise NetworkSecurityException(e,sys)
+            # If any error occurs during the process (e.g., connection failure, authentication error)
+            # the exception is caught, wrapped in a custom exception (NetworkSecurityException), and raised again.
+            raise NetworkSecurityException(e, sys)
+
         
 if __name__=='__main__':
     FILE_PATH="Network_Data\phisingData.csv"
