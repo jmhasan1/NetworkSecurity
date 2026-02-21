@@ -2,3 +2,6 @@ venv
 __pycache__/
 test_mongodb.py
 .env
+data_schema
+final_model
+# I have add data_schema and final model later may remove
