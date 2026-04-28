@@ -4,4 +4,7 @@ test_mongodb.py
 .env
 data_schema
 final_model
+Artifacts
+logs
+.vscode
 # I have add data_schema and final model later may remove
