@@ -7,4 +7,5 @@ final_model
 Artifacts
 logs
 .vscode
+mlflow.db
 # I have add data_schema and final model later may remove
